@@ -1,0 +1,2756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitness Destination — Build Your Strongest Version</title>
+<style>
+/* ============================================================
+   RESET & BASE
+============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black: #000000;
+  --charcoal: #111111;
+  --blue: #0066ff;
+  --blue-bright: #00aaff;
+  --blue-glow: rgba(0, 170, 255, 0.15);
+  --white: #ffffff;
+  --white-dim: rgba(255,255,255,0.6);
+  --white-faint: rgba(255,255,255,0.08);
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+html { scroll-behavior: auto; overflow-x: hidden; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  cursor: none;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ============================================================
+   LOADER
+============================================================ */
+#loader {
+  position: fixed; inset: 0;
+  background: var(--black);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.loader-logo {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: clamp(2rem, 6vw, 5rem);
+  letter-spacing: 0.25em;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-logo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, var(--blue-bright) 50%, transparent 100%);
+  transform: translateX(-100%);
+  animation: shimmer 1.5s ease 0.3s forwards;
+}
+
+@keyframes shimmer {
+  to { transform: translateX(100%); }
+}
+
+.loader-bar-wrap {
+  width: clamp(200px, 40vw, 400px);
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--blue), var(--blue-bright));
+  transition: width 0.05s linear;
+  position: relative;
+}
+
+.loader-bar::after {
+  content: '';
+  position: absolute;
+  right: 0; top: -2px;
+  width: 4px; height: 5px;
+  background: var(--blue-bright);
+  box-shadow: 0 0 12px 4px var(--blue-bright);
+}
+
+.loader-percent {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--white-dim);
+  font-weight: 300;
+}
+
+.loader-energy {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ============================================================
+   CUSTOM CURSOR
+============================================================ */
+#cursor-dot {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--blue-bright);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease, background 0.2s;
+  box-shadow: 0 0 10px var(--blue-bright);
+}
+
+#cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(0, 170, 255, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9997;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+}
+
+#cursor-ring-2 {
+  position: fixed;
+  width: 56px; height: 56px;
+  border: 1px solid rgba(0, 170, 255, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9996;
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s ease, width 0.3s ease, height 0.3s ease;
+}
+
+body.cursor-hover #cursor-dot { transform: translate(-50%, -50%) scale(2); background: var(--blue); }
+body.cursor-hover #cursor-ring { width: 60px; height: 60px; opacity: 0.4; }
+body.cursor-hover #cursor-ring-2 { width: 80px; height: 80px; opacity: 0.2; }
+
+/* ============================================================
+   NAVBAR
+============================================================ */
+#navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1.5rem 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.4s ease, padding 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+#navbar.scrolled {
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 1rem 4rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.nav-logo {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.25em;
+  color: var(--white);
+  text-decoration: none;
+  cursor: none;
+}
+
+.nav-logo span { color: var(--blue-bright); }
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--white-dim);
+  text-decoration: none;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s;
+  cursor: none;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--blue-bright);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { width: 100%; }
+
+.nav-cta {
+  padding: 0.6rem 1.8rem;
+  border: 1px solid rgba(0, 170, 255, 0.4);
+  color: var(--blue-bright) !important;
+  border-radius: 2px;
+  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.nav-cta:hover {
+  background: var(--blue-bright) !important;
+  color: var(--black) !important;
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.3) !important;
+}
+
+.nav-cta::after { display: none !important; }
+
+.nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: none; }
+.nav-hamburger span { width: 24px; height: 1px; background: var(--white); transition: 0.3s; }
+
+/* ============================================================
+   HERO SECTION
+============================================================ */
+#hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#canvas-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+#hero-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 900px;
+  padding: 0 2rem;
+}
+
+.hero-eyebrow {
+  font-size: 0.65rem;
+  letter-spacing: 0.5em;
+  color: var(--blue-bright);
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: clamp(3.5rem, 10vw, 9rem);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+}
+
+.hero-title .word { display: inline-block; overflow: hidden; }
+.hero-title .char { display: inline-block; transform: translateY(110%); }
+
+.hero-sub {
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  color: var(--white-dim);
+  letter-spacing: 0.15em;
+  line-height: 2.2;
+  margin-bottom: 3rem;
+  font-weight: 300;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.btn-primary {
+  padding: 1rem 3rem;
+  background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+  color: var(--white);
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: none;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--blue-bright), #00ddff);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.btn-primary:hover { box-shadow: 0 0 40px rgba(0, 170, 255, 0.4); transform: translateY(-2px); }
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary span { position: relative; z-index: 1; }
+
+.btn-secondary {
+  padding: 1rem 3rem;
+  background: transparent;
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.2);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 400;
+  cursor: none;
+  transition: border-color 0.3s, color 0.3s, background 0.3s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--blue-bright);
+  color: var(--blue-bright);
+  background: rgba(0, 170, 255, 0.05);
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 2.5rem; left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, var(--blue-bright), transparent);
+  animation: scroll-pulse 2s ease-in-out infinite;
+}
+
+@keyframes scroll-pulse {
+  0%, 100% { transform: scaleY(1); opacity: 1; }
+  50% { transform: scaleY(0.4); opacity: 0.4; }
+}
+
+.scroll-text {
+  font-size: 0.55rem;
+  letter-spacing: 0.4em;
+  color: var(--blue-bright);
+  text-transform: uppercase;
+  writing-mode: horizontal-tb;
+}
+
+/* ============================================================
+   THREE.JS DUMBBELL CANVAS
+============================================================ */
+#webgl-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ============================================================
+   SECTION BASE
+============================================================ */
+.section {
+  position: relative;
+  z-index: 2;
+  padding: 10rem 8vw;
+  overflow: hidden;
+}
+
+.section-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.5em;
+  color: var(--blue-bright);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.section-title {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: clamp(3rem, 7vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.section-body {
+  font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+  color: var(--white-dim);
+  line-height: 1.8;
+  font-weight: 300;
+  max-width: 520px;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* ============================================================
+   ABOUT SECTION
+============================================================ */
+#about {
+  background: transparent;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.about-visual {
+  position: relative;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+.about-img-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0a0a1a 0%, #000520 40%, #001040 100%);
+  overflow: hidden;
+}
+
+.about-grid-lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 170, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 170, 255, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.about-stat-block {
+  position: absolute;
+  bottom: 2rem; right: -2rem;
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(0, 170, 255, 0.2);
+  backdrop-filter: blur(20px);
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.about-stat-num {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 3rem;
+  color: var(--blue-bright);
+  line-height: 1;
+}
+
+.about-stat-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--white-dim);
+  text-transform: uppercase;
+}
+
+.about-glow-orb {
+  position: absolute;
+  top: 30%; left: 40%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(0, 100, 255, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(40px);
+  animation: float-orb 6s ease-in-out infinite;
+}
+
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -30px); }
+}
+
+.about-content { padding-left: 2rem; }
+
+.about-separator {
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, var(--blue-bright), transparent);
+  margin: 2rem 0;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.about-pillars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.pillar-card {
+  padding: 1.5rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, background 0.3s;
+  cursor: none;
+}
+
+.pillar-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 170, 255, 0.05) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.pillar-card:hover { border-color: rgba(0, 170, 255, 0.3); }
+.pillar-card:hover::before { opacity: 1; }
+
+.pillar-icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.8rem;
+  display: block;
+}
+
+.pillar-name {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+}
+
+.pillar-desc {
+  font-size: 0.75rem;
+  color: var(--white-dim);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* ============================================================
+   PROGRAMS SECTION
+============================================================ */
+#programs {
+  text-align: center;
+  background: var(--charcoal);
+  min-height: 100vh;
+}
+
+#programs .section-title { margin-left: auto; margin-right: auto; }
+#programs .section-body { margin: 0 auto 5rem; }
+
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5px;
+  margin-top: 5rem;
+  opacity: 0;
+}
+
+.program-card {
+  position: relative;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  cursor: none;
+  background: #0a0a0a;
+}
+
+.program-card-bg {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.program-card:hover .program-card-bg { transform: scale(1.08); }
+
+.prog-1 .program-card-bg {
+  background: linear-gradient(160deg, #0a0015 0%, #001030 50%, #000820 100%);
+}
+.prog-2 .program-card-bg {
+  background: linear-gradient(160deg, #001030 0%, #000020 50%, #020010 100%);
+}
+.prog-3 .program-card-bg {
+  background: linear-gradient(160deg, #000820 0%, #0a0015 50%, #001030 100%);
+}
+
+.program-card-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 170, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 170, 255, 0.04) 1px, transparent 1px);
+  background-size: 30px 30px;
+  transition: opacity 0.3s;
+  opacity: 0.5;
+}
+
+.program-card:hover .program-card-grid { opacity: 1; }
+
+.program-card-glow {
+  position: absolute;
+  bottom: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  filter: blur(60px);
+  transition: bottom 0.6s ease, opacity 0.4s;
+  opacity: 0;
+}
+
+.prog-1 .program-card-glow { background: radial-gradient(circle, rgba(0, 100, 255, 0.6), transparent); }
+.prog-2 .program-card-glow { background: radial-gradient(circle, rgba(0, 150, 255, 0.5), transparent); }
+.prog-3 .program-card-glow { background: radial-gradient(circle, rgba(0, 200, 255, 0.5), transparent); }
+
+.program-card:hover .program-card-glow { bottom: -20%; opacity: 1; }
+
+.program-card-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2.5rem 2rem;
+}
+
+.program-num {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 5rem;
+  color: rgba(0, 170, 255, 0.1);
+  line-height: 1;
+  position: absolute;
+  top: 2rem; right: 1.5rem;
+  transition: color 0.3s;
+}
+
+.program-card:hover .program-num { color: rgba(0, 170, 255, 0.2); }
+
+.program-tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  color: var(--blue-bright);
+  text-transform: uppercase;
+  margin-bottom: 0.7rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s 0.1s, transform 0.4s 0.1s;
+}
+
+.program-name {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: 0.8rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s 0.2s, transform 0.4s 0.2s;
+}
+
+.program-desc {
+  font-size: 0.78rem;
+  color: var(--white-dim);
+  line-height: 1.7;
+  font-weight: 300;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s 0.3s, transform 0.4s 0.3s;
+  max-width: 280px;
+}
+
+.program-card:hover .program-tag,
+.program-card:hover .program-name,
+.program-card:hover .program-desc { opacity: 1; transform: translateY(0); }
+
+.program-divider {
+  width: 0; height: 1px;
+  background: var(--blue-bright);
+  margin: 1rem 0;
+  transition: width 0.4s 0.15s;
+}
+
+.program-card:hover .program-divider { width: 40px; }
+
+/* ============================================================
+   STATS / TRANSFORMATION SECTION
+============================================================ */
+#transformation {
+  padding: 8rem 8vw;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.transformation-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0, 60, 150, 0.12), transparent);
+  pointer-events: none;
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: center;
+  gap: 6rem;
+  flex-wrap: wrap;
+  margin-top: 5rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.stat-number {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: clamp(4rem, 8vw, 7rem);
+  color: var(--white);
+  line-height: 1;
+  position: relative;
+}
+
+.stat-number span.count { color: var(--white); }
+.stat-number .plus { color: var(--blue-bright); }
+
+.stat-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.4em;
+  color: var(--white-dim);
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+.stat-glow-line {
+  width: 1px; height: 60px;
+  background: linear-gradient(to bottom, var(--blue-bright), transparent);
+  margin-bottom: 1rem;
+}
+
+/* ============================================================
+   PERSONAL TRAINING
+============================================================ */
+#training {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+.training-visual {
+  position: relative;
+  overflow: hidden;
+  min-height: 70vh;
+}
+
+.training-visual-inner {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #00001a 0%, #000830 40%, #001050 100%);
+}
+
+.training-visual-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 170, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 170, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.training-visual-lines {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.energy-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue-bright), transparent);
+  opacity: 0;
+  animation: energy-sweep 4s ease-in-out infinite;
+}
+
+.energy-line:nth-child(1) { top: 20%; width: 60%; left: 20%; animation-delay: 0s; }
+.energy-line:nth-child(2) { top: 40%; width: 80%; left: 10%; animation-delay: 1s; }
+.energy-line:nth-child(3) { top: 60%; width: 50%; left: 30%; animation-delay: 2s; }
+.energy-line:nth-child(4) { top: 80%; width: 70%; left: 15%; animation-delay: 0.5s; }
+
+@keyframes energy-sweep {
+  0% { opacity: 0; transform: scaleX(0); transform-origin: left; }
+  30% { opacity: 0.5; transform: scaleX(1); }
+  60% { opacity: 0.3; transform: scaleX(1); }
+  100% { opacity: 0; transform: scaleX(0); transform-origin: right; }
+}
+
+.training-content {
+  padding: 8rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--charcoal);
+}
+
+.trainer-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.trainer-card {
+  padding: 1.5rem;
+  border-left: 2px solid rgba(0, 170, 255, 0.2);
+  background: rgba(255,255,255,0.02);
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  transition: border-color 0.3s, background 0.3s;
+  cursor: none;
+}
+
+.trainer-card:hover {
+  border-left-color: var(--blue-bright);
+  background: rgba(0, 170, 255, 0.04);
+}
+
+.trainer-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 1.2rem;
+  color: var(--white);
+}
+
+.trainer-info { flex: 1; }
+
+.trainer-name {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+
+.trainer-spec {
+  font-size: 0.68rem;
+  letter-spacing: 0.25em;
+  color: var(--blue-bright);
+  text-transform: uppercase;
+}
+
+.trainer-exp {
+  font-size: 0.7rem;
+  color: var(--white-dim);
+  margin-top: 0.3rem;
+}
+
+/* ============================================================
+   MEMBERSHIP SECTION
+============================================================ */
+#membership {
+  padding: 10rem 8vw;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.membership-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 170, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 170, 255, 0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 5rem;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.plan-card {
+  padding: 3rem 2rem;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.02);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s ease, border-color 0.4s, box-shadow 0.4s;
+  cursor: none;
+}
+
+.plan-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue-bright), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.plan-card:hover { transform: translateY(-8px); border-color: rgba(0, 170, 255, 0.25); }
+.plan-card:hover::before { opacity: 1; }
+
+.plan-card.featured {
+  border-color: rgba(0, 170, 255, 0.3);
+  background: rgba(0, 100, 255, 0.05);
+  box-shadow: 0 0 60px rgba(0, 100, 255, 0.08);
+}
+
+.plan-card.featured::before { opacity: 1; }
+
+.plan-badge {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.plan-name {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.1em;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.plan-price {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 4rem;
+  color: var(--blue-bright);
+  line-height: 1;
+  margin: 1.5rem 0 0.3rem;
+}
+
+.plan-price sup {
+  font-size: 1.5rem;
+  vertical-align: super;
+  color: var(--white-dim);
+}
+
+.plan-price-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--white-dim);
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.plan-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  margin: 2rem 0;
+}
+
+.plan-features {
+  list-style: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.plan-features li {
+  font-size: 0.8rem;
+  color: var(--white-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.plan-features li::before {
+  content: '';
+  display: block;
+  width: 16px; height: 1px;
+  background: var(--blue-bright);
+  flex-shrink: 0;
+}
+
+.plan-features li.featured-feature { color: var(--white); }
+
+.plan-cta {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid rgba(0, 170, 255, 0.4);
+  background: transparent;
+  color: var(--blue-bright);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: none;
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-cta:hover,
+.plan-card.featured .plan-cta {
+  background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+  color: var(--white);
+  border-color: transparent;
+  box-shadow: 0 0 30px rgba(0, 170, 255, 0.3);
+}
+
+/* ============================================================
+   GALLERY / VISUAL SECTION
+============================================================ */
+#gallery {
+  padding: 10rem 0;
+  overflow: hidden;
+}
+
+#gallery .section-label,
+#gallery .section-title {
+  padding: 0 8vw;
+}
+
+.gallery-marquee {
+  display: flex;
+  gap: 1.5px;
+  margin-top: 4rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.gallery-track {
+  display: flex;
+  gap: 1.5px;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.gallery-item {
+  flex-shrink: 0;
+  width: 320px; height: 400px;
+  background: var(--charcoal);
+  overflow: hidden;
+  position: relative;
+}
+
+.gallery-item-inner {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.6s ease;
+}
+
+.gallery-item:hover .gallery-item-inner { transform: scale(1.05); }
+
+.g-item-1 { background: linear-gradient(135deg, #000820 0%, #001540 100%); }
+.g-item-2 { background: linear-gradient(135deg, #0a0015 0%, #001030 100%); }
+.g-item-3 { background: linear-gradient(135deg, #001040 0%, #000015 100%); }
+.g-item-4 { background: linear-gradient(135deg, #000010 0%, #001030 100%); }
+.g-item-5 { background: linear-gradient(135deg, #001540 0%, #000820 100%); }
+.g-item-6 { background: linear-gradient(135deg, #001030 0%, #0a0015 100%); }
+
+.gallery-item-label {
+  position: absolute;
+  bottom: 1.5rem; left: 1.5rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+}
+
+.gallery-noise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+}
+
+/* ============================================================
+   TESTIMONIALS
+============================================================ */
+#testimonials {
+  padding: 10rem 8vw;
+  text-align: center;
+  background: var(--charcoal);
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 5rem;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.testimonial-card {
+  padding: 2.5rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  cursor: none;
+}
+
+.testimonial-card:hover {
+  border-color: rgba(0, 170, 255, 0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.testimonial-quote {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 4rem;
+  color: var(--blue-bright);
+  opacity: 0.15;
+  line-height: 0.7;
+  margin-bottom: 1rem;
+}
+
+.testimonial-text {
+  font-size: 0.88rem;
+  color: var(--white-dim);
+  line-height: 1.8;
+  font-weight: 300;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.testimonial-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+  flex-shrink: 0;
+}
+
+.testimonial-name {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  color: var(--white);
+}
+
+.testimonial-result {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--blue-bright);
+  text-transform: uppercase;
+}
+
+.testimonial-stars {
+  margin-left: auto;
+  color: var(--blue-bright);
+  font-size: 0.7rem;
+}
+
+/* ============================================================
+   CONTACT SECTION
+============================================================ */
+#contact {
+  padding: 10rem 8vw;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8rem;
+  align-items: start;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-glow {
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 100, 255, 0.06), transparent);
+  pointer-events: none;
+}
+
+.contact-info { display: flex; flex-direction: column; gap: 3rem; }
+
+.contact-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.contact-detail-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  color: var(--blue-bright);
+  text-transform: uppercase;
+}
+
+.contact-detail-value {
+  font-size: 1rem;
+  color: var(--white-dim);
+  font-weight: 300;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.form-group { position: relative; }
+
+.form-input {
+  width: 100%;
+  padding: 1.2rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 300;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.form-input::placeholder { color: rgba(255,255,255,0.2); }
+.form-input:focus { border-bottom-color: var(--blue-bright); }
+
+.form-label {
+  position: absolute;
+  top: 1.2rem; left: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: top 0.3s, font-size 0.3s, color 0.3s;
+}
+
+.form-input:focus + .form-label,
+.form-input:not(:placeholder-shown) + .form-label {
+  top: -0.8rem;
+  font-size: 0.55rem;
+  color: var(--blue-bright);
+}
+
+.form-underline {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0%; height: 1px;
+  background: var(--blue-bright);
+  transition: width 0.3s ease;
+}
+
+.form-input:focus ~ .form-underline { width: 100%; }
+
+.form-textarea { min-height: 120px; resize: none; line-height: 1.8; }
+
+.form-submit {
+  padding: 1.2rem 3rem;
+  background: transparent;
+  border: 1px solid rgba(0, 170, 255, 0.4);
+  color: var(--blue-bright);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: none;
+  align-self: flex-start;
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-submit:hover {
+  background: linear-gradient(135deg, var(--blue), var(--blue-bright));
+  color: var(--white);
+  border-color: transparent;
+  box-shadow: 0 0 40px rgba(0, 170, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+footer {
+  padding: 4rem 8vw;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.footer-logo {
+  font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.25em;
+  color: var(--white);
+}
+
+.footer-logo span { color: var(--blue-bright); }
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.footer-links a {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.3s;
+  cursor: none;
+}
+
+.footer-links a:hover { color: var(--blue-bright); }
+
+.footer-copy {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.2);
+}
+
+/* ============================================================
+   BACK TO TOP
+============================================================ */
+#back-top {
+  position: fixed;
+  bottom: 2.5rem; right: 2.5rem;
+  width: 48px; height: 48px;
+  border: 1px solid rgba(0, 170, 255, 0.3);
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: none;
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s, transform 0.4s, border-color 0.3s, box-shadow 0.3s;
+  backdrop-filter: blur(10px);
+}
+
+#back-top.visible { opacity: 1; transform: translateY(0); }
+#back-top:hover { border-color: var(--blue-bright); box-shadow: 0 0 20px rgba(0, 170, 255, 0.2); }
+
+#back-top svg { width: 16px; height: 16px; fill: none; stroke: var(--blue-bright); stroke-width: 1.5; }
+
+/* ============================================================
+   RIPPLE
+============================================================ */
+.ripple {
+  position: fixed;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: rgba(0, 170, 255, 0.3);
+  pointer-events: none;
+  z-index: 9995;
+  transform: translate(-50%, -50%) scale(1);
+  animation: ripple-out 0.6s ease-out forwards;
+}
+
+@keyframes ripple-out {
+  to { transform: translate(-50%, -50%) scale(40); opacity: 0; }
+}
+
+/* ============================================================
+   NOISE OVERLAY
+============================================================ */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 1024px) {
+  #about { grid-template-columns: 1fr; gap: 4rem; }
+  #training { grid-template-columns: 1fr; }
+  #contact { grid-template-columns: 1fr; gap: 4rem; }
+  .programs-grid { grid-template-columns: 1fr; }
+  .plans-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .stats-grid { gap: 3rem; }
+  .about-stat-block { right: 1rem; }
+}
+
+@media (max-width: 768px) {
+  #navbar { padding: 1.2rem 2rem; }
+  #navbar.scrolled { padding: 0.8rem 2rem; }
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
+  .section { padding: 6rem 5vw; }
+  .hero-content { padding: 0 1.5rem; }
+  .training-content { padding: 4rem 5vw; }
+  .contact-form, .contact-info { width: 100%; }
+  footer { flex-direction: column; text-align: center; }
+  .footer-links { flex-wrap: wrap; justify-content: center; }
+  .plans-grid { max-width: 100%; }
+  .gallery-item { width: 240px; height: 300px; }
+  .stats-grid { gap: 2rem; }
+  #back-top { bottom: 1.5rem; right: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Noise overlay for cinematic texture -->
+<div class="noise-overlay"></div>
+
+<!-- Custom Cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="cursor-ring-2"></div>
+
+<!-- ============================================================
+     LOADER
+============================================================ -->
+<div id="loader">
+  <canvas class="loader-energy" id="loader-canvas"></canvas>
+  <div class="loader-logo">FITNESS<span style="color:#00aaff">.</span>DESTINATION</div>
+  <div class="loader-bar-wrap">
+    <div class="loader-bar" id="loader-bar"></div>
+  </div>
+  <div class="loader-percent" id="loader-percent">000</div>
+</div>
+
+<!-- ============================================================
+     NAVBAR
+============================================================ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">FD<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#programs">Programs</a></li>
+    <li><a href="#training">Trainers</a></li>
+    <li><a href="#membership">Membership</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#contact" class="nav-cta">Join Now</a></li>
+  </ul>
+  <div class="nav-hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ============================================================
+     THREE.JS CANVAS — fixed, behind everything
+============================================================ -->
+<canvas id="webgl-canvas"></canvas>
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<section id="hero">
+  <canvas id="canvas-bg"></canvas>
+
+  <div id="hero-particles"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Est. 2018 — Premium Performance Center</div>
+    <h1 class="hero-title" id="hero-title">BUILD YOUR<br>STRONGEST<br>VERSION</h1>
+    <p class="hero-sub">Train Smarter.<br>Lift Harder.<br>Become Unstoppable.</p>
+    <div class="hero-actions">
+      <button class="btn-primary"><span>Start Your Journey</span></button>
+      <button class="btn-secondary">Explore Programs</button>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     ABOUT
+============================================================ -->
+<section id="about" class="section">
+  <div class="about-visual">
+    <div class="about-img-bg">
+      <div class="about-grid-lines"></div>
+      <div class="about-glow-orb"></div>
+    </div>
+    <div class="about-stat-block">
+      <div class="about-stat-num" id="stat-members">0</div>
+      <div class="about-stat-label">Active Members</div>
+    </div>
+  </div>
+  <div class="about-content">
+    <div class="section-label">Our Philosophy</div>
+    <h2 class="section-title">WHERE<br>LIMITS<br>DISSOLVE</h2>
+    <div class="about-separator"></div>
+    <p class="section-body">Fitness Destination was forged from one conviction: every person carries an extraordinary version of themselves. Our environment, methodology, and community exist to bring that version forward — through science, discipline, and elite coaching.</p>
+    <div class="about-pillars">
+      <div class="pillar-card">
+        <span class="pillar-icon">⚡</span>
+        <div class="pillar-name">Elite Training</div>
+        <div class="pillar-desc">Evidence-based methods refined by world-class coaches</div>
+      </div>
+      <div class="pillar-card">
+        <span class="pillar-icon">🧬</span>
+        <div class="pillar-name">Precision Science</div>
+        <div class="pillar-desc">Data-driven programming tailored to your physiology</div>
+      </div>
+      <div class="pillar-card">
+        <span class="pillar-icon">🏆</span>
+        <div class="pillar-name">Peak Results</div>
+        <div class="pillar-desc">Measurable transformation in 90 days or less</div>
+      </div>
+      <div class="pillar-card">
+        <span class="pillar-icon">🔥</span>
+        <div class="pillar-name">Relentless Culture</div>
+        <div class="pillar-desc">A community that refuses to accept mediocrity</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PROGRAMS
+============================================================ -->
+<section id="programs" class="section">
+  <div class="section-label">What We Offer</div>
+  <h2 class="section-title">PROGRAMS</h2>
+  <p class="section-body">Three pathways. One destination. Engineered for every stage of your evolution.</p>
+  <div class="programs-grid">
+    <div class="program-card prog-1">
+      <div class="program-card-bg"></div>
+      <div class="program-card-grid"></div>
+      <div class="program-card-glow"></div>
+      <div class="program-num">01</div>
+      <div class="program-card-content">
+        <div class="program-tag">Strength & Power</div>
+        <div class="program-divider"></div>
+        <div class="program-name">Iron Protocol</div>
+        <div class="program-desc">Build raw, functional strength through periodized powerlifting and compound movement mastery. Designed for those who want to move serious weight.</div>
+      </div>
+    </div>
+    <div class="program-card prog-2">
+      <div class="program-card-bg"></div>
+      <div class="program-card-grid"></div>
+      <div class="program-card-glow"></div>
+      <div class="program-num">02</div>
+      <div class="program-card-content">
+        <div class="program-tag">Body Composition</div>
+        <div class="program-divider"></div>
+        <div class="program-name">Apex Physique</div>
+        <div class="program-desc">Sculpt your ideal body through intelligent hypertrophy training, nutrition precision, and metabolic conditioning strategies that accelerate fat loss.</div>
+      </div>
+    </div>
+    <div class="program-card prog-3">
+      <div class="program-card-bg"></div>
+      <div class="program-card-grid"></div>
+      <div class="program-card-glow"></div>
+      <div class="program-num">03</div>
+      <div class="program-card-content">
+        <div class="program-tag">Athletic Performance</div>
+        <div class="program-divider"></div>
+        <div class="program-name">Velocity Elite</div>
+        <div class="program-desc">Unlock explosive speed, agility, and power. Our performance specialists train athletes to dominate their sport through sport-specific programming.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TRANSFORMATION / STATS
+============================================================ -->
+<section id="transformation">
+  <div class="transformation-bg"></div>
+  <div class="section-label">Results Speak</div>
+  <h2 class="section-title" style="font-family:'Bebas Neue','Arial Black',sans-serif;font-size:clamp(3rem,7vw,7rem);opacity:0;transform:translateY(40px)">THE NUMBERS</h2>
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-glow-line"></div>
+      <div class="stat-number"><span class="count" data-target="3200">0</span><span class="plus">+</span></div>
+      <div class="stat-label">Members Transformed</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-glow-line"></div>
+      <div class="stat-number"><span class="count" data-target="47">0</span><span class="plus">+</span></div>
+      <div class="stat-label">Expert Trainers</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-glow-line"></div>
+      <div class="stat-number"><span class="count" data-target="98">0</span><span class="plus">%</span></div>
+      <div class="stat-label">Success Rate</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-glow-line"></div>
+      <div class="stat-number"><span class="count" data-target="6">0</span><span class="plus"></span></div>
+      <div class="stat-label">Years of Excellence</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PERSONAL TRAINING
+============================================================ -->
+<section id="training">
+  <div class="training-visual">
+    <div class="training-visual-inner"></div>
+    <div class="training-visual-grid"></div>
+    <div class="training-visual-lines">
+      <div class="energy-line"></div>
+      <div class="energy-line"></div>
+      <div class="energy-line"></div>
+      <div class="energy-line"></div>
+    </div>
+  </div>
+  <div class="training-content">
+    <div class="section-label">Expert Coaches</div>
+    <h2 class="section-title">YOUR<br>PERSONAL<br>EDGE</h2>
+    <p class="section-body" style="margin-bottom:0">Every transformation story begins with the right coach. Our specialists design programs around your unique goals, physiology, and timeline.</p>
+    <div class="trainer-cards">
+      <div class="trainer-card">
+        <div class="trainer-avatar">MR</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Marcus Reid</div>
+          <div class="trainer-spec">Strength & Powerlifting</div>
+          <div class="trainer-exp">12 years · NSCA-CSCS · Former Olympic Athlete</div>
+        </div>
+      </div>
+      <div class="trainer-card">
+        <div class="trainer-avatar">SA</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Sophia Alves</div>
+          <div class="trainer-spec">Body Composition & Nutrition</div>
+          <div class="trainer-exp">9 years · ISSN-SNS · 500+ transformations</div>
+        </div>
+      </div>
+      <div class="trainer-card">
+        <div class="trainer-avatar">KT</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Kane Torres</div>
+          <div class="trainer-spec">Athletic Performance</div>
+          <div class="trainer-exp">14 years · NASM-PES · Pro Sports Consultant</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     MEMBERSHIP
+============================================================ -->
+<section id="membership">
+  <div class="membership-bg-grid"></div>
+  <div class="section-label">Invest in Yourself</div>
+  <h2 class="section-title">MEMBERSHIP<br>PLANS</h2>
+  <p class="section-body" style="margin:0 auto">Choose your level of commitment. Every plan includes full facility access and our performance guarantee.</p>
+  <div class="plans-grid">
+    <div class="plan-card">
+      <div class="plan-name">Challenger</div>
+      <div class="plan-price"><sup>$</sup>79</div>
+      <div class="plan-price-label">Per Month</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Full gym access (6am–10pm)</li>
+        <li>Group classes (12/month)</li>
+        <li>Locker room & showers</li>
+        <li>Basic nutrition guide</li>
+        <li>Mobile app access</li>
+      </ul>
+      <button class="plan-cta">Get Started</button>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-name">Elite</div>
+      <div class="plan-price"><sup>$</sup>149</div>
+      <div class="plan-price-label">Per Month</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li class="featured-feature">Unlimited gym access (24/7)</li>
+        <li class="featured-feature">Unlimited group classes</li>
+        <li class="featured-feature">4x personal training sessions</li>
+        <li class="featured-feature">Nutrition & recovery coaching</li>
+        <li class="featured-feature">Priority booking & VIP lounge</li>
+        <li class="featured-feature">Body composition analysis</li>
+      </ul>
+      <button class="plan-cta">Claim Elite Access</button>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Apex</div>
+      <div class="plan-price"><sup>$</sup>299</div>
+      <div class="plan-price-label">Per Month</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Everything in Elite</li>
+        <li>Unlimited personal training</li>
+        <li>Custom meal planning</li>
+        <li>Weekly performance reviews</li>
+        <li>Concierge fitness management</li>
+        <li>Recovery suite access</li>
+      </ul>
+      <button class="plan-cta">Go Apex</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     GALLERY
+============================================================ -->
+<section id="gallery">
+  <div class="section-label">The Environment</div>
+  <h2 class="section-title">THE SPACE</h2>
+  <div class="gallery-marquee">
+    <div class="gallery-track">
+      <div class="gallery-item g-item-1">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">Strength Floor</div>
+      </div>
+      <div class="gallery-item g-item-2">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">Power Racks</div>
+      </div>
+      <div class="gallery-item g-item-3">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">Recovery Suite</div>
+      </div>
+      <div class="gallery-item g-item-4">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">Cardio Zone</div>
+      </div>
+      <div class="gallery-item g-item-5">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">Group Studio</div>
+      </div>
+      <div class="gallery-item g-item-6">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">VIP Lounge</div>
+      </div>
+      <!-- Duplicate for seamless loop -->
+      <div class="gallery-item g-item-1">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">Strength Floor</div>
+      </div>
+      <div class="gallery-item g-item-2">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">Power Racks</div>
+      </div>
+      <div class="gallery-item g-item-3">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">Recovery Suite</div>
+      </div>
+      <div class="gallery-item g-item-4">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">Cardio Zone</div>
+      </div>
+      <div class="gallery-item g-item-5">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">Group Studio</div>
+      </div>
+      <div class="gallery-item g-item-6">
+        <div class="gallery-item-inner"></div>
+        <div class="gallery-noise"></div>
+        <div class="gallery-item-label">VIP Lounge</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TESTIMONIALS
+============================================================ -->
+<section id="testimonials" class="section">
+  <div class="section-label">Member Stories</div>
+  <h2 class="section-title">REAL<br>RESULTS</h2>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">In 16 weeks, I lost 34 lbs and added 80 lbs to my deadlift. The precision of the coaching here is unlike anything I've experienced. This is not a gym — it's a performance lab.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar"></div>
+        <div>
+          <div class="testimonial-name">James Caldwell</div>
+          <div class="testimonial-result">-34 lbs · +80 lbs Deadlift</div>
+        </div>
+        <div class="testimonial-stars">★★★★★</div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">As a marathon runner, I needed a team that understood athletic periodization. Fitness Destination built me a hybrid program that shaved 18 minutes off my PR. Absolutely elite.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar"></div>
+        <div>
+          <div class="testimonial-name">Priya Nair</div>
+          <div class="testimonial-result">-18 min Marathon PR</div>
+        </div>
+        <div class="testimonial-stars">★★★★★</div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">The environment alone elevates your performance. Dark, focused, cinematic energy. The coaches are world-class. I walked in average and walked out a different person entirely.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar"></div>
+        <div>
+          <div class="testimonial-name">Derek Okafor</div>
+          <div class="testimonial-result">+22 lbs Lean Mass</div>
+        </div>
+        <div class="testimonial-stars">★★★★★</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACT
+============================================================ -->
+<section id="contact">
+  <div class="contact-glow"></div>
+  <div class="contact-info">
+    <div class="section-label">Get In Touch</div>
+    <h2 class="section-title">START<br>TODAY</h2>
+    <div class="contact-detail">
+      <div class="contact-detail-label">Location</div>
+      <div class="contact-detail-value">1 Performance Drive, Suite 100<br>Los Angeles, CA 90001</div>
+    </div>
+    <div class="contact-detail">
+      <div class="contact-detail-label">Hours</div>
+      <div class="contact-detail-value">Mon–Fri: 5:00 AM – 11:00 PM<br>Sat–Sun: 6:00 AM – 10:00 PM</div>
+    </div>
+    <div class="contact-detail">
+      <div class="contact-detail-label">Contact</div>
+      <div class="contact-detail-value">hello@fitnessdestination.com<br>+1 (310) 555 0199</div>
+    </div>
+  </div>
+  <div class="contact-form">
+    <div class="form-group">
+      <input type="text" class="form-input" placeholder=" " id="f-name">
+      <label for="f-name" class="form-label">Full Name</label>
+      <div class="form-underline"></div>
+    </div>
+    <div class="form-group">
+      <input type="email" class="form-input" placeholder=" " id="f-email">
+      <label for="f-email" class="form-label">Email Address</label>
+      <div class="form-underline"></div>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-input" placeholder=" " id="f-goal">
+      <label for="f-goal" class="form-label">Your Primary Goal</label>
+      <div class="form-underline"></div>
+    </div>
+    <div class="form-group">
+      <textarea class="form-input form-textarea" placeholder=" " id="f-msg"></textarea>
+      <label for="f-msg" class="form-label">Message (Optional)</label>
+      <div class="form-underline"></div>
+    </div>
+    <button class="form-submit">Send Message</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer>
+  <div class="footer-logo">FITNESS<span>.</span>DESTINATION</div>
+  <ul class="footer-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#programs">Programs</a></li>
+    <li><a href="#membership">Membership</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 Fitness Destination. All rights reserved.</div>
+</footer>
+
+<!-- Back to top -->
+<button id="back-top" aria-label="Back to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</button>
+
+<!-- ============================================================
+     SCRIPTS
+============================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+/* ============================================================
+   GOOGLE FONTS — injected after load for performance
+============================================================ */
+const fontLink = document.createElement('link');
+fontLink.rel = 'stylesheet';
+fontLink.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap';
+document.head.appendChild(fontLink);
+
+/* ============================================================
+   LOADER
+============================================================ */
+(function() {
+  const loader = document.getElementById('loader');
+  const bar = document.getElementById('loader-bar');
+  const pct = document.getElementById('loader-percent');
+  const loaderCanvas = document.getElementById('loader-canvas');
+  const lctx = loaderCanvas.getContext('2d');
+  let progress = 0;
+  let animId;
+
+  function resizeLoader() {
+    loaderCanvas.width = window.innerWidth;
+    loaderCanvas.height = window.innerHeight;
+  }
+  resizeLoader();
+  window.addEventListener('resize', resizeLoader);
+
+  // Particles for loader
+  const particles = Array.from({length: 60}, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    size: Math.random() * 1.5 + 0.3,
+    alpha: Math.random() * 0.5 + 0.1,
+    hue: 200 + Math.random() * 40
+  }));
+
+  function drawLoader() {
+    lctx.clearRect(0, 0, loaderCanvas.width, loaderCanvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = loaderCanvas.width;
+      if (p.x > loaderCanvas.width) p.x = 0;
+      if (p.y < 0) p.y = loaderCanvas.height;
+      if (p.y > loaderCanvas.height) p.y = 0;
+      lctx.beginPath();
+      lctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      lctx.fillStyle = `hsla(${p.hue}, 100%, 70%, ${p.alpha})`;
+      lctx.fill();
+    });
+    // Energy arc
+    const cx = loaderCanvas.width / 2;
+    const cy = loaderCanvas.height / 2;
+    const r = Math.min(cx, cy) * 0.7;
+    const angle = (progress / 100) * Math.PI * 2 - Math.PI / 2;
+    lctx.beginPath();
+    lctx.arc(cx, cy, r, -Math.PI / 2, angle);
+    lctx.strokeStyle = 'rgba(0, 170, 255, 0.06)';
+    lctx.lineWidth = 1;
+    lctx.stroke();
+    animId = requestAnimationFrame(drawLoader);
+  }
+  drawLoader();
+
+  let current = 0;
+  const interval = setInterval(() => {
+    current += Math.random() * 3 + 1;
+    if (current >= 100) current = 100;
+    progress = current;
+    bar.style.width = current + '%';
+    pct.textContent = String(Math.floor(current)).padStart(3, '0');
+    if (current >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        cancelAnimationFrame(animId);
+        gsap.to(loader, {
+          opacity: 0,
+          duration: 1,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            loader.style.display = 'none';
+            initSite();
+          }
+        });
+      }, 400);
+    }
+  }, 35);
+})();
+
+/* ============================================================
+   CUSTOM CURSOR
+============================================================ */
+const cursorDot = document.getElementById('cursor-dot');
+const cursorRing = document.getElementById('cursor-ring');
+const cursorRing2 = document.getElementById('cursor-ring-2');
+let mouseX = 0, mouseY = 0;
+let ring1X = 0, ring1Y = 0, ring2X = 0, ring2Y = 0;
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  gsap.to(cursorDot, { x: mouseX, y: mouseY, duration: 0.1, ease: 'power2.out' });
+});
+
+function animateCursor() {
+  ring1X += (mouseX - ring1X) * 0.15;
+  ring1Y += (mouseY - ring1Y) * 0.15;
+  ring2X += (mouseX - ring2X) * 0.08;
+  ring2Y += (mouseY - ring2Y) * 0.08;
+  cursorRing.style.left = ring1X + 'px';
+  cursorRing.style.top = ring1Y + 'px';
+  cursorRing2.style.left = ring2X + 'px';
+  cursorRing2.style.top = ring2Y + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.addEventListener('mouseover', e => {
+  if (e.target.matches('button, a, .plan-card, .program-card, .pillar-card, .trainer-card, .testimonial-card')) {
+    document.body.classList.add('cursor-hover');
+  }
+});
+document.addEventListener('mouseout', e => {
+  if (e.target.matches('button, a, .plan-card, .program-card, .pillar-card, .trainer-card, .testimonial-card')) {
+    document.body.classList.remove('cursor-hover');
+  }
+});
+
+// Ripple on click
+document.addEventListener('click', e => {
+  const r = document.createElement('div');
+  r.className = 'ripple';
+  r.style.left = e.clientX + 'px';
+  r.style.top = e.clientY + 'px';
+  document.body.appendChild(r);
+  setTimeout(() => r.remove(), 600);
+});
+
+/* ============================================================
+   HERO CANVAS BACKGROUND (animated wave / atmosphere)
+============================================================ */
+function initHeroBg() {
+  const canvas = document.getElementById('canvas-bg');
+  const ctx = canvas.getContext('2d');
+  let W, H, t = 0;
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    // Dark gradient base
+    const bg = ctx.createRadialGradient(W * 0.5, H * 0.4, 0, W * 0.5, H * 0.4, W * 0.8);
+    bg.addColorStop(0, 'rgba(0, 20, 80, 0.5)');
+    bg.addColorStop(0.5, 'rgba(0, 5, 30, 0.3)');
+    bg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Wave lines
+    for (let i = 0; i < 6; i++) {
+      ctx.beginPath();
+      const yBase = H * (0.3 + i * 0.12);
+      const amp = 20 + i * 8;
+      const freq = 0.003 + i * 0.001;
+      const speed = 0.4 + i * 0.1;
+      for (let x = 0; x <= W; x += 2) {
+        const y = yBase + Math.sin(x * freq + t * speed + i) * amp;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      const alpha = 0.025 - i * 0.003;
+      ctx.strokeStyle = `rgba(0, 170, 255, ${alpha})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    t += 0.01;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ============================================================
+   THREE.JS DUMBBELL + SCENE
+============================================================ */
+let scene, camera, renderer, dumbbell, particles3d;
+let scrollProgress = 0;
+let targetRotX = 0, targetRotY = 0;
+let currentRotX = 0, currentRotY = 0;
+let scrollVelocity = 0, lastScroll = 0;
+let canvasVisible = false;
+
+function initThreeJS() {
+  const canvas = document.getElementById('webgl-canvas');
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(0, 0, 5);
+
+  buildDumbbell();
+  buildParticles3D();
+  buildLights();
+  buildEnergyStreaks();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  animateThree();
+}
+
+function buildDumbbell() {
+  dumbbell = new THREE.Group();
+
+  // Materials
+  const metalMat = new THREE.MeshStandardMaterial({
+    color: 0x888899,
+    metalness: 1.0,
+    roughness: 0.18,
+    envMapIntensity: 1.5,
+  });
+
+  const darkMetal = new THREE.MeshStandardMaterial({
+    color: 0x222230,
+    metalness: 1.0,
+    roughness: 0.3,
+  });
+
+  const chromeAccent = new THREE.MeshStandardMaterial({
+    color: 0x0077cc,
+    metalness: 1.0,
+    roughness: 0.05,
+    emissive: 0x001133,
+    emissiveIntensity: 0.3,
+  });
+
+  // BAR / SHAFT
+  const barGeo = new THREE.CylinderGeometry(0.06, 0.06, 2.6, 24);
+  const bar = new THREE.Mesh(barGeo, metalMat);
+  bar.rotation.z = Math.PI / 2;
+  bar.castShadow = true;
+  dumbbell.add(bar);
+
+  // GRIP KNURLING rings along bar
+  for (let i = -4; i <= 4; i++) {
+    const ringGeo = new THREE.TorusGeometry(0.07, 0.008, 8, 24);
+    const ring = new THREE.Mesh(ringGeo, darkMetal);
+    ring.rotation.y = Math.PI / 2;
+    ring.position.x = i * 0.2;
+    dumbbell.add(ring);
+  }
+
+  // COLLARS
+  const collarGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.15, 20);
+  [-1.15, 1.15].forEach(xPos => {
+    const collar = new THREE.Mesh(collarGeo, chromeAccent);
+    collar.rotation.z = Math.PI / 2;
+    collar.position.x = xPos;
+    dumbbell.add(collar);
+  });
+
+  // WEIGHT PLATES — each end has 2 plates
+  function buildPlate(x, sign) {
+    const plateGroup = new THREE.Group();
+    // Main plate disc
+    const outerR = 0.75, innerR = 0.08, thickness = 0.12;
+    const platePath = new THREE.Shape();
+    platePath.absarc(0, 0, outerR, 0, Math.PI * 2, false);
+    const hole = new THREE.Path();
+    hole.absarc(0, 0, innerR, 0, Math.PI * 2, true);
+    platePath.holes.push(hole);
+    const plateGeo = new THREE.ExtrudeGeometry(platePath, { depth: thickness, bevelEnabled: false });
+    const plate = new THREE.Mesh(plateGeo, metalMat);
+    plate.rotation.y = Math.PI / 2;
+    plate.castShadow = true;
+    plateGroup.add(plate);
+
+    // Rim / bevel ring
+    const rimGeo = new THREE.TorusGeometry(outerR, 0.025, 8, 48);
+    const rim = new THREE.Mesh(rimGeo, darkMetal);
+    rim.rotation.y = Math.PI / 2;
+    rim.position.x = thickness * sign * 0.5;
+    plateGroup.add(rim);
+
+    // Inner accent ring
+    const accentGeo = new THREE.TorusGeometry(0.4, 0.015, 6, 48);
+    const accent = new THREE.Mesh(accentGeo, chromeAccent);
+    accent.rotation.y = Math.PI / 2;
+    accent.position.x = thickness * sign * 0.5;
+    plateGroup.add(accent);
+
+    plateGroup.position.x = x;
+    dumbbell.add(plateGroup);
+  }
+
+  buildPlate(-1.6, -1);
+  buildPlate(-1.6 - 0.15, -1);
+  buildPlate(1.6, 1);
+  buildPlate(1.6 + 0.15, 1);
+
+  // End caps
+  const capGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.06, 16);
+  [-2.08, 2.08].forEach(xPos => {
+    const cap = new THREE.Mesh(capGeo, chromeAccent);
+    cap.rotation.z = Math.PI / 2;
+    cap.position.x = xPos;
+    dumbbell.add(cap);
+  });
+
+  dumbbell.rotation.x = 0.15;
+  dumbbell.rotation.y = 0.4;
+  dumbbell.position.set(1.5, 0, 0);
+  dumbbell.scale.setScalar(0.8);
+  scene.add(dumbbell);
+}
+
+function buildParticles3D() {
+  const count = 180;
+  const geo = new THREE.BufferGeometry();
+  const positions = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+  const speeds = new Float32Array(count);
+
+  for (let i = 0; i < count; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.random() * Math.PI;
+    const r = 1.5 + Math.random() * 2.5;
+    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    positions[i * 3 + 2] = r * Math.cos(phi);
+    sizes[i] = Math.random() * 3 + 1;
+    speeds[i] = Math.random() * 0.5 + 0.2;
+  }
+
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+  const mat = new THREE.PointsMaterial({
+    color: 0x0099ff,
+    size: 0.04,
+    transparent: true,
+    opacity: 0.6,
+    sizeAttenuation: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+
+  particles3d = new THREE.Points(geo, mat);
+  particles3d.position.copy(dumbbell.position);
+  scene.add(particles3d);
+}
+
+function buildLights() {
+  // Ambient
+  const ambient = new THREE.AmbientLight(0x0a0a1a, 2);
+  scene.add(ambient);
+
+  // Key light — electric blue
+  const keyLight = new THREE.DirectionalLight(0x4488ff, 4);
+  keyLight.position.set(3, 5, 3);
+  keyLight.castShadow = true;
+  scene.add(keyLight);
+
+  // Fill — cool white
+  const fillLight = new THREE.DirectionalLight(0xaaccff, 1.5);
+  fillLight.position.set(-4, 2, 2);
+  scene.add(fillLight);
+
+  // Rim — sharp blue
+  const rimLight = new THREE.DirectionalLight(0x0066ff, 3);
+  rimLight.position.set(0, -3, -3);
+  scene.add(rimLight);
+
+  // Point light on dumbbell
+  const pointA = new THREE.PointLight(0x0088ff, 3, 8);
+  pointA.position.set(2, 2, 2);
+  scene.add(pointA);
+
+  const pointB = new THREE.PointLight(0x0044cc, 2, 6);
+  pointB.position.set(-2, -1, 1);
+  scene.add(pointB);
+}
+
+function buildEnergyStreaks() {
+  const streakGroup = new THREE.Group();
+  for (let i = 0; i < 12; i++) {
+    const len = Math.random() * 1.5 + 0.5;
+    const geo = new THREE.CylinderGeometry(0.003, 0.001, len, 4);
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0x0099ff,
+      transparent: true,
+      opacity: Math.random() * 0.4 + 0.1,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const streak = new THREE.Mesh(geo, mat);
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.random() * Math.PI;
+    const r = Math.random() * 1.5 + 0.5;
+    streak.position.set(
+      r * Math.sin(phi) * Math.cos(theta),
+      r * Math.sin(phi) * Math.sin(theta),
+      r * Math.cos(phi)
+    );
+    streak.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+    streak.userData.speed = (Math.random() - 0.5) * 0.5;
+    streak.userData.pulseOffset = Math.random() * Math.PI * 2;
+    streakGroup.add(streak);
+  }
+  streakGroup.position.copy(dumbbell.position);
+  scene.add(streakGroup);
+  dumbbell.userData.streakGroup = streakGroup;
+}
+
+function animateThree() {
+  const clock = new THREE.Clock();
+  function loop() {
+    requestAnimationFrame(loop);
+    const elapsed = clock.getElapsedTime();
+    const delta = clock.getDelta ? 0.016 : 0.016;
+
+    // Smooth rotation with lerp
+    currentRotX += (targetRotX - currentRotX) * 0.06;
+    currentRotY += (targetRotY - currentRotY) * 0.06;
+
+    if (dumbbell) {
+      // Base idle animation
+      dumbbell.rotation.y = currentRotY + elapsed * 0.08;
+      dumbbell.rotation.x = currentRotX + Math.sin(elapsed * 0.3) * 0.05;
+      dumbbell.rotation.z = Math.sin(elapsed * 0.2) * 0.03;
+
+      // Scroll-driven position
+      const scrollY = window.scrollY;
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      const sp = Math.min(scrollY / maxScroll, 1);
+
+      // Move through space during scroll
+      dumbbell.position.x = 1.5 - sp * 3;
+      dumbbell.position.y = Math.sin(sp * Math.PI * 1.5) * 1.5;
+      dumbbell.position.z = Math.cos(sp * Math.PI) * 0.5 - 0.5;
+
+      // Velocity kick
+      scrollVelocity = (scrollY - lastScroll) * 0.005;
+      lastScroll = scrollY;
+      dumbbell.rotation.z += scrollVelocity * 0.3;
+
+      // Scale breathing
+      const breathe = 1 + Math.sin(elapsed * 0.5) * 0.01;
+      dumbbell.scale.setScalar(0.8 * breathe);
+
+      // Particle orbit
+      if (particles3d) {
+        particles3d.position.copy(dumbbell.position);
+        particles3d.rotation.y += 0.002;
+        particles3d.rotation.x += 0.001;
+      }
+
+      // Streaks
+      const sg = dumbbell.userData.streakGroup;
+      if (sg) {
+        sg.position.copy(dumbbell.position);
+        sg.children.forEach((s, i) => {
+          s.material.opacity = (Math.sin(elapsed * 2 + s.userData.pulseOffset) * 0.5 + 0.5) * 0.4;
+          s.rotation.z += s.userData.speed * 0.02;
+        });
+      }
+    }
+
+    renderer.render(scene, camera);
+  }
+  loop();
+}
+
+// Mouse parallax on dumbbell
+document.addEventListener('mousemove', e => {
+  const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+  const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+  targetRotY = nx * 0.6;
+  targetRotX = -ny * 0.3;
+});
+
+/* ============================================================
+   MAIN SITE INIT (called after loader)
+============================================================ */
+function initSite() {
+  gsap.registerPlugin(ScrollTrigger);
+  initHeroBg();
+  initThreeJS();
+  initHeroAnimations();
+  initScrollAnimations();
+  initNavbar();
+  initBackToTop();
+  initCounters();
+}
+
+/* ============================================================
+   HERO ANIMATIONS
+============================================================ */
+function initHeroAnimations() {
+  const tl = gsap.timeline({ delay: 0.2 });
+
+  tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+    .to('.hero-title', { opacity: 1, duration: 0 }, '-=0.4')
+    .from('.hero-title .word', {
+      y: '110%',
+      duration: 1,
+      ease: 'power4.out',
+      stagger: 0.08,
+    }, '-=0.3')
+    .to('.hero-sub', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
+    .to('.hero-actions', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.5')
+    .to('.scroll-indicator', { opacity: 1, duration: 0.6 }, '-=0.2');
+
+  // Split hero title into chars for animation
+  document.querySelectorAll('.hero-title').forEach(el => {
+    el.innerHTML = el.innerHTML.replace(/([A-Z])/g, '<span class="char">$1</span>');
+  });
+}
+
+/* ============================================================
+   SCROLL-DRIVEN ANIMATIONS
+============================================================ */
+function initScrollAnimations() {
+  // Generic section labels and titles
+  gsap.utils.toArray('.section-label').forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 85%' }
+    });
+  });
+
+  gsap.utils.toArray('.section-title').forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 80%' }
+    });
+  });
+
+  gsap.utils.toArray('.section-body').forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 80%' }
+    });
+  });
+
+  // About visual
+  gsap.to('.about-visual', {
+    opacity: 1, x: 0, duration: 1.2, ease: 'power3.out',
+    scrollTrigger: { trigger: '.about-visual', start: 'top 75%' }
+  });
+
+  gsap.to('.about-separator', {
+    opacity: 1, scaleX: 1, duration: 0.8, ease: 'power2.out',
+    scrollTrigger: { trigger: '.about-separator', start: 'top 85%' }
+  });
+
+  gsap.to('.about-pillars', {
+    opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+    scrollTrigger: { trigger: '.about-pillars', start: 'top 80%' }
+  });
+
+  // Programs grid
+  gsap.to('.programs-grid', {
+    opacity: 1, duration: 1, ease: 'power3.out',
+    scrollTrigger: { trigger: '.programs-grid', start: 'top 80%' }
+  });
+
+  // Stats
+  gsap.utils.toArray('.stat-item').forEach((el, i) => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.8, delay: i * 0.15, ease: 'power3.out',
+      scrollTrigger: { trigger: '.stats-grid', start: 'top 75%' }
+    });
+  });
+
+  // Trainer cards
+  gsap.to('.trainer-cards', {
+    opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+    scrollTrigger: { trigger: '.trainer-cards', start: 'top 80%' }
+  });
+
+  // Plans
+  gsap.to('.plans-grid', {
+    opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+    scrollTrigger: { trigger: '.plans-grid', start: 'top 75%' }
+  });
+
+  // Testimonials
+  gsap.to('.testimonials-grid', {
+    opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+    scrollTrigger: { trigger: '.testimonials-grid', start: 'top 75%' }
+  });
+
+  // Contact
+  gsap.utils.toArray('.contact-detail').forEach((el, i) => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.7, delay: i * 0.12, ease: 'power3.out',
+      scrollTrigger: { trigger: '#contact', start: 'top 70%' }
+    });
+  });
+
+  gsap.to('.contact-form', {
+    opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+    scrollTrigger: { trigger: '.contact-form', start: 'top 75%' }
+  });
+
+  // Parallax hero content
+  gsap.to('.hero-content', {
+    y: -80,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '#hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 1
+    }
+  });
+
+  // Horizontal marquee speed based on scroll
+  ScrollTrigger.create({
+    trigger: '#gallery',
+    start: 'top bottom',
+    end: 'bottom top',
+    onUpdate: (self) => {
+      const track = document.querySelector('.gallery-track');
+      if (track) {
+        const baseSpeed = 30;
+        const boosted = baseSpeed / (1 + Math.abs(self.getVelocity()) * 0.002);
+        track.style.animationDuration = boosted + 's';
+      }
+    }
+  });
+}
+
+/* ============================================================
+   ANIMATED COUNTERS
+============================================================ */
+function initCounters() {
+  document.querySelectorAll('.count').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 80%',
+      once: true,
+      onEnter: () => {
+        gsap.to({ val: 0 }, {
+          val: target,
+          duration: 2,
+          ease: 'power2.out',
+          onUpdate: function() {
+            el.textContent = Math.round(this.targets()[0].val).toLocaleString();
+          }
+        });
+      }
+    });
+  });
+
+  // Members stat in about
+  ScrollTrigger.create({
+    trigger: '#about',
+    start: 'top 60%',
+    once: true,
+    onEnter: () => {
+      gsap.to({ val: 0 }, {
+        val: 3247,
+        duration: 2.5,
+        ease: 'power2.out',
+        onUpdate: function() {
+          const el = document.getElementById('stat-members');
+          if (el) el.textContent = Math.round(this.targets()[0].val).toLocaleString();
+        }
+      });
+    }
+  });
+}
+
+/* ============================================================
+   NAVBAR SCROLL BEHAVIOR
+============================================================ */
+function initNavbar() {
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  });
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        gsap.to(window, {
+          scrollTo: { y: target, offsetY: 80 },
+          duration: 1.2,
+          ease: 'power3.inOut'
+        });
+      }
+    });
+  });
+}
+
+/* ============================================================
+   BACK TO TOP
+============================================================ */
+function initBackToTop() {
+  const btn = document.getElementById('back-top');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 600) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  });
+  btn.addEventListener('click', () => {
+    gsap.to(window, { scrollTo: 0, duration: 1.2, ease: 'power3.inOut' });
+  });
+}
+
+/* ============================================================
+   HERO TITLE CHAR SPLIT (must run before loader hides)
+============================================================ */
+(function splitHeroChars() {
+  const title = document.getElementById('hero-title');
+  if (!title) return;
+  const lines = title.innerHTML.split('<br>');
+  title.innerHTML = lines.map(line => {
+    const words = line.trim().split(' ');
+    return words.map(word =>
+      `<span class="word">${word.split('').map(c => `<span class="char">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</span>`
+    ).join(' ');
+  }).join('<br>');
+})();
+
+/* ============================================================
+   MAGNETIC BUTTONS
+============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.btn-primary, .btn-secondary, .plan-cta, .form-submit, .nav-cta').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const rect = btn.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) * 0.25;
+      const dy = (e.clientY - cy) * 0.25;
+      gsap.to(btn, { x: dx, y: dy, duration: 0.3, ease: 'power2.out' });
+    });
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+    });
+  });
+});
+</script>
+</body>
+</html>
